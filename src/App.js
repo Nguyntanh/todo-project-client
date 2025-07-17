@@ -47,10 +47,8 @@ const App = () => {
   const [selectedTaskId, setSelectedTaskId] = useState('');
 
   useEffect(() => {
-    if (token) {
-      fetchUser();
-    }
-  }, [token]);
+    fetchUser();
+}, [fetchUser]);
 
   useEffect(() => {
     if (token && user) {

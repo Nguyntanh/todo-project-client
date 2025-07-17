@@ -40,8 +40,7 @@ pipeline {
         stage('Publish') {
             steps {
                 echo 'Copying to IIS wwwroot folder'
-                // iisreset /stop (optional, uncomment if needed to stop IIS)
-                // bat 'iisreset /stop'
+                // bat 'iisreset /stop' // Uncomment if you need to stop IIS
                 bat 'xcopy "%WORKSPACE%\\publish" /E /Y /I /R "c:\\wwwroot\\myproject"'
             }
         }
@@ -51,11 +50,11 @@ pipeline {
                 echo 'Configuring IIS website'
                 powershell '''
                     Import-Module WebAdministration
-                    if (-not (Test-Path IIS:\\Sites\\MySite)) {
-                        New-Website -Name "MySite" -Port 81 -PhysicalPath "C:\ProgramData\Jenkins\.jenkins\workspace\CI"
-                    }
-                    # Optional: Configure URL rewrite for React client-side routing
                     $siteName = "MySite"
+                    if (-not (Test-Path IIS:\\Sites\\$siteName)) {
+                        New-Website -Name $siteName -Port 81 -PhysicalPath "c:\\wwwroot\\myproject"
+                    }
+                    # Configure URL rewrite for React client-side routing
                     $ruleName = "ReactRouter"
                     $ruleExists = Get-WebConfiguration -Filter "/system.webServer/rewrite/rules/rule[@name='$ruleName']" -PSPath "IIS:\\Sites\\$siteName"
                     if (-not $ruleExists) {
